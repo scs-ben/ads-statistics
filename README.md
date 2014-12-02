@@ -17,10 +17,12 @@ Add alias and service provider to app/config/app.php
 and
 'Statistic'       => 'Ads\Statistics\Statistic',
 
+* Steps 4,5 are not necessary if you don't have user authentication
+
 Step 4:
 Publish the config file so that you can edit it in app/config/packages/ads/statistics/settings.php
 php artisan config:publish ads/statistics
 
 Step 5:
-Edit the app/config/packages/ads/statistics/settings.php file to provide a value that matches your user's id and a first/last/real name field.
+Edit the app/config/packages/ads/statistics/settings.php file to provide a value that matches your user's id and first name and/or last name field (the value entered should be the string name of the column).
 *Note: if you do not do this step, the username and id will not be stored in the database
