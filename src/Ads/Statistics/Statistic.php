@@ -29,11 +29,10 @@ class Statistic extends \Eloquent {
 			$firstname = Config::get('statistics::settings.first_name');
 			$lastname = Config::get('statistics::settings.last_name');
 			
-			$userid = null;
 			if (!empty($userid))
 				$statistic->userid = Auth::user()->$userid;
-			if (!empty($username))
-				$statistic->username = Auth::user()->$username;
+			if (!empty($firstname))
+				$statistic->firstname = Auth::user()->$firstname;
 			if (!empty($lastname))
 				$statistic->lastname = Auth::user()->$lastname;
 		}
