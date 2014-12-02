@@ -52,7 +52,7 @@ class Statistic extends \Eloquent {
 			}
 		}
 		
-		$statistic->input = json_encode(Input::all());
+		$statistic->input = json_encode($inputs);
 		$statistic->save();
 		
 		Session::flash('statistic_id', $statistic->id);
