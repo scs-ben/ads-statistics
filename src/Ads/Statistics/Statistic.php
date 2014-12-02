@@ -26,13 +26,16 @@ class Statistic extends \Eloquent {
 		
 		if (Auth::check()) {
 			$userid = Config::get('statistics::settings.user_id');
-			$username = Config::get('statistics::settings.user_name');
+			$firstname = Config::get('statistics::settings.first_name');
+			$lastname = Config::get('statistics::settings.last_name');
 			
 			$userid = null;
 			if (!empty($userid))
 				$statistic->userid = Auth::user()->$userid;
 			if (!empty($username))
 				$statistic->username = Auth::user()->$username;
+			if (!empty($lastname))
+				$statistic->lastname = Auth::user()->$lastname;
 		}
 		$statistic->input = json_encode(Input::all());
 		$statistic->save();

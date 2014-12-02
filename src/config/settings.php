@@ -9,6 +9,7 @@ return array(
 	*/
 
 	'user_id' => null,
-    'user_name' => null,
+    'first_name' => null,
+    'last_name' => null,
     
 );
