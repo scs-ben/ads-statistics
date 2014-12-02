@@ -18,4 +18,9 @@ and
 'Statistic'       => 'Ads\Statistics\Statistic',
 
 Step 4:
-Update the config/settings file to provide a value that matches your user's id and a first/last/real name field.
+Publish the config file so that you can edit it in app/config/packages/ads/statistics/settings.php
+php artisan config:publish ads/statistics
+
+Step 5:
+Edit the app/config/packages/ads/statistics/settings.php file to provide a value that matches your user's id and a first/last/real name field.
+*Note: if you do not do this step, the username and id will not be stored in the database
