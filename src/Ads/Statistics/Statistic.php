@@ -40,6 +40,18 @@ class Statistic extends \Eloquent {
 			if (!empty($lastname))
 				$statistic->lastname = Auth::user()->$lastname;
 		}
+		
+		$inputs = Input::all();
+		
+		if (count($inputs) > 0) {
+			$restrictedFields = Config::get('statistics::settings.protected_fields');
+			
+			foreach ($restrictedFields as $restrictedField) {
+				if (isset($inputs[$restrictedField]))
+					unset($inputs[$restrictedField]);
+			}
+		}
+		
 		$statistic->input = json_encode(Input::all());
 		$statistic->save();
 		
