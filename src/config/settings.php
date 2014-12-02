@@ -8,7 +8,7 @@ return array(
 	|--------------------------------------------------------------------------
 	*/
 
-	'user_id' => 'userid',
-    'user_name' => 'realname',
+	'user_id' => null,
+    'user_name' => null,
     
 );
