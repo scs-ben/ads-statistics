@@ -15,13 +15,17 @@ class Statistic extends \Eloquent {
 		$parameters = $request->server->all();
 		
 		$statistic = new Statistic;
-		$statistic->http_code = $parameters['REDIRECT_STATUS'];
-		$statistic->ip_address = $parameters['REMOTE_ADDR'];
-		$statistic->destination_url = $parameters['REQUEST_URI'];
-		$statistic->target_url = $route->uri();
-		$statistic->destination_name = $route->getName();
+				if (!empty($parameters['REDIRECT_STATUS']))
+			$statistic->http_code = $parameters['REDIRECT_STATUS'];
+		if (!empty($parameters['REMOTE_ADDR']))
+			$statistic->ip_address = $parameters['REMOTE_ADDR'];
+		if (!empty($parameters['REQUEST_URI']))
+			$statistic->destination_url = $parameters['REQUEST_URI'];
 		if (!empty($parameters['HTTP_REFERER']))
 			$statistic->referer_url = $parameters['HTTP_REFERER'];
+		
+		$statistic->target_url = $route->uri();
+		$statistic->destination_name = $route->getName();
 		$statistic->method = $route->methods()[0];
 		
 		if (Auth::check()) {
