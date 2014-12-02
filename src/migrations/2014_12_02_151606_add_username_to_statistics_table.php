@@ -14,8 +14,8 @@ class AddUsernameToStatisticsTable extends Migration {
 	{
 		Schema::table('statistics', function(Blueprint $table)
 		{
-			$table->string('firstname', 50)->nullable()->after('userid');
-			$table->string('lastname', 50)->nullable()->after('firstname');
+			$table->string('firstname', 50)->after('userid')->nullable();
+			$table->string('lastname', 50)->after('firstname')->nullable();
 		});
 	}
 
