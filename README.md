@@ -3,6 +3,8 @@ ads-statistics
 
 Agility Data Systems Statistics Tracking Module for Laravel
 
+(Make sure to run "php artisan migrate --package=ads/statistics" if updating)
+
 Step 1:
 set up composer:
 "ads/statistics": "dev-master"
