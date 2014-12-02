@@ -13,13 +13,9 @@ php artisan migrate --package=ads/statistics
 
 Step 3:
 Add alias and service provider to app/config/app.php
-
-...
 'Ads\Statistics\StatisticsServiceProvider',
-...
-
 and
-
-...
 'Statistic'       => 'Ads\Statistics\Statistic',
-...
+
+Step 4:
+Update the config/settings file to provide a value that matches your user's id and a first/last/real name field.
