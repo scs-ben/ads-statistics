@@ -10,6 +10,7 @@ Once configired, this plugin will automatically save page viewing history to the
 _(Make sure to run "php artisan migrate --package=ads/statistics" if updating)_
 
 Step 1:
+
 Set up composer, add the package to your require tag:
 ```
 "ads/statistics": "dev-master"
@@ -20,12 +21,14 @@ php composer update
 ```
 
 Step 2:
+
 run migration: 
 ```
 php artisan migrate --package=ads/statistics
 ```
 
 Step 3:
+
 Add alias and service provider to app/config/app.php
 ```
 'Ads\Statistics\StatisticsServiceProvider',
@@ -38,12 +41,14 @@ and
 _* Steps 4,5 are not necessary if you don't have user authentication_
 
 Step 4:
+
 Run:
 ```
 php artisan config:publish ads/statistics
 ```
 
 Step 5:
+
 Edit the _<b>app/config/packages/ads/statistics/settings.php</b>_ file.
 Please enter the column names from your user database table.
 For example:
