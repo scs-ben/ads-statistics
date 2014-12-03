@@ -49,7 +49,7 @@ php artisan config:publish ads/statistics
 
 Step 5:
 
-Edit the _<b>app/config/packages/ads/statistics/settings.php</b>_ file.
+Edit the _<b>app/config/packages/ads/statistics/config.php</b>_ file.
 
 Please enter the column names from your user database table.
 
