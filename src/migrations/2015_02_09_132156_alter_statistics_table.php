@@ -12,6 +12,8 @@ class AlterStatisticsTable extends Migration {
 	 */
 	public function up()
 	{
+		DB::query("ALTER TABLE `statistics` CHANGE COLUMN `errorFile` `errorFile` text NOT NULL;");
+		
 		Schema::table('statistics', function(Blueprint $table)
 		{
 			$table->text('errorFile')->nullable();
@@ -25,10 +27,7 @@ class AlterStatisticsTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::table('statistics', function(Blueprint $table)
-		{
-			$table->string('errorFile', 128)->nullable();
-		});
+		DB::query("ALTER TABLE `statistics` CHANGE COLUMN `errorFile` `errorFile` VARCHAR(128) NOT NULL;");
 	}
 
 }
