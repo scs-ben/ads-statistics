@@ -15,7 +15,7 @@ class Statistic extends \Eloquent {
 		$parameters = $request->server->all();
 		
 		$statistic = new Statistic;
-				if (!empty($parameters['REDIRECT_STATUS']))
+		if (!empty($parameters['REDIRECT_STATUS']))
 			$statistic->http_code = $parameters['REDIRECT_STATUS'];
 		if (!empty($parameters['REMOTE_ADDR']))
 			$statistic->ip_address = $parameters['REMOTE_ADDR'];
@@ -53,7 +53,13 @@ class Statistic extends \Eloquent {
 		}
 		
 		$statistic->input = json_encode($inputs);
-		$statistic->save();
+		try {
+			$statistic->save();
+		}
+		catch( PDOException $Exception ) {
+			Log::error($Exception);
+		}
+		
 		
 		Session::flash('statistic_id', $statistic->id);
 	}
