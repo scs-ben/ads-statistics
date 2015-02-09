@@ -12,12 +12,7 @@ class AlterStatisticsTable extends Migration {
 	 */
 	public function up()
 	{
-		DB::query("ALTER TABLE `statistics` CHANGE COLUMN `errorFile` `errorFile` text NOT NULL;");
-		
-		Schema::table('statistics', function(Blueprint $table)
-		{
-			$table->text('errorFile')->nullable();
-		});
+		DB::statement("ALTER TABLE `statistics` CHANGE COLUMN `errorFile` `errorFile` text NOT NULL;");
 	}
 
 	/**
@@ -27,7 +22,7 @@ class AlterStatisticsTable extends Migration {
 	 */
 	public function down()
 	{
-		DB::query("ALTER TABLE `statistics` CHANGE COLUMN `errorFile` `errorFile` VARCHAR(128) NOT NULL;");
+		DB::statement("ALTER TABLE `statistics` CHANGE COLUMN `errorFile` `errorFile` VARCHAR(128) NOT NULL;");
 	}
 
 }
