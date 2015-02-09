@@ -12,7 +12,7 @@ class AlterStatisticsTable extends Migration {
 	 */
 	public function up()
 	{
-		DB::statement("ALTER TABLE `statistics` CHANGE COLUMN `errorFile` `errorFile` text NOT NULL;");
+		DB::statement("ALTER TABLE `statistics` CHANGE COLUMN `errorMessage` `errorMessage` text NOT NULL;");
 	}
 
 	/**
@@ -22,7 +22,7 @@ class AlterStatisticsTable extends Migration {
 	 */
 	public function down()
 	{
-		DB::statement("ALTER TABLE `statistics` CHANGE COLUMN `errorFile` `errorFile` VARCHAR(128) NOT NULL;");
+		DB::statement("ALTER TABLE `statistics` CHANGE COLUMN `errorMessage` `errorMessage` VARCHAR(64) NOT NULL;");
 	}
 
 }
