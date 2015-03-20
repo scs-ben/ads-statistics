@@ -14,6 +14,6 @@ return array(
 	'user_id' => null,
     'first_name' => null,
     'last_name' => null,
-	'protected_fields' => ['password'],
+	'protected_fields' => ['_token','password'],
     
 );
