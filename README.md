@@ -13,7 +13,7 @@ Step 1:
 
 Set up composer, add the package to your require tag:
 ```
-"ads/statistics": "dev-master"
+"ads/statistics": "1.x-dev"
 ```
 run
 ```
