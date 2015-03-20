@@ -35,7 +35,7 @@ class StatisticsServiceProvider extends ServiceProvider {
 	public function register()
 	{
 		$this->mergeConfigFrom(
-		    __DIR__.'/path/to/config/statistics.php', 'statistics'
+		    __DIR__.'/../config/statistics.php', 'statistics'
 		);
 	}
 
