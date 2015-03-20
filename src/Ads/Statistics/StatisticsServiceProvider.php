@@ -1,5 +1,6 @@
 <?php namespace Ads\Statistics;
 
+use Statistic;
 use Illuminate\Support\ServiceProvider;
 
 class StatisticsServiceProvider extends ServiceProvider {
@@ -11,19 +12,21 @@ class StatisticsServiceProvider extends ServiceProvider {
 	 */
 	protected $defer = false;
 
-	/**
-	 * Bootstrap the application events.
-	 *
-	 * @return void
-	 */
 	public function boot()
 	{
-		$this->package('ads/statistics');
+		// Publish the config file
+		$this->publishes([
+				__DIR__.'/../config/config.php' => config_path('config.php'),
+		]);
 		
-		include __DIR__.'/../../global.php';
-		include __DIR__.'/../../filters.php';
+		// Publish your migrations
+		$this->publishes([
+				__DIR__.'/../database/migrations/' => base_path('/database/migrations')
+		], 'migrations');
+		
+		include __DIR__.'/../../routes.php';
 	}
-
+	
 	/**
 	 * Register the service provider.
 	 *
@@ -39,9 +42,9 @@ class StatisticsServiceProvider extends ServiceProvider {
 	 *
 	 * @return array
 	 */
-	public function provides()
-	{
-		return array();
-	}
+// 	public function provides()
+// 	{
+// 		return [];
+// 	}
 
 }
