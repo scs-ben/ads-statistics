@@ -29,9 +29,9 @@ class Statistic extends \Eloquent {
 		$statistic->method = $route->methods()[0];
 		
 		if (Auth::check()) {
-			$userid = Config::get('statistics::config.user_id');
-			$firstname = Config::get('statistics::config.first_name');
-			$lastname = Config::get('statistics::config.last_name');
+			$userid = Config::get('statistics.user_id');
+			$firstname = Config::get('statistics.first_name');
+			$lastname = Config::get('statistics.last_name');
 			
 			if (!empty($userid))
 				$statistic->userid = Auth::user()->$userid;
@@ -44,7 +44,7 @@ class Statistic extends \Eloquent {
 		$inputs = Input::all();
 		
 		if (count($inputs) > 0) {
-			$restrictedFields = Config::get('statistics::config.protected_fields');
+			$restrictedFields = Config::get('statistics.protected_fields');
 			
 			foreach ($restrictedFields as $restrictedField) {
 				if (isset($inputs[$restrictedField]))
