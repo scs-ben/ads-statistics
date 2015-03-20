@@ -16,7 +16,7 @@ class StatisticsServiceProvider extends ServiceProvider {
 	{
 		// Publish the config file
 		$this->publishes([
-				__DIR__.'/../config/config.php' => config_path('config.php'),
+				__DIR__.'/../config/statistics.php' => config_path('statistics.php'),
 		]);
 		
 		// Publish your migrations
@@ -34,7 +34,9 @@ class StatisticsServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-		//
+		$this->mergeConfigFrom(
+		    __DIR__.'/path/to/config/statistics.php', 'statistics'
+		);
 	}
 
 	/**
