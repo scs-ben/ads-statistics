@@ -85,6 +85,8 @@ class Statistic extends \Eloquent {
 		if (empty($id)) {
 			if (!empty($parameters['REDIRECT_STATUS']))
 				$statistic->http_code = $parameters['REDIRECT_STATUS'];
+			else
+				$statistic->http_code = 200;
 			if (!empty($parameters['REMOTE_ADDR']))
 				$statistic->ip_address = $parameters['REMOTE_ADDR'];
 			if (!empty($parameters['REQUEST_URI']))
