@@ -40,7 +40,7 @@ class Statistic extends \Eloquent {
 		
 		$statistic->save();
 		
-		Session::flash('statistic_id', $statistic->id);
+		Session::flash('error_statistic_id', $statistic->id);
 	}
 	
 	public static function fatalError($request, Exception $e)
@@ -70,14 +70,17 @@ class Statistic extends \Eloquent {
 		
 		$statistic->save();
 		
-		Session::flash('statistic_id', $statistic->id);
+		Session::flash('error_statistic_id', $statistic->id);
 	}
 	
 	public function logStatistics($route, $request, $id = null)
 	{
 		$parameters = $request->server->all();
 		
-		$statistic = new Statistic;
+		if (!empty($id))
+			$statistic = Statistic::find($id);
+		else
+			$statistic = new Statistic;
 		
 		if (empty($id)) {
 			if (!empty($parameters['REDIRECT_STATUS']))
@@ -93,8 +96,8 @@ class Statistic extends \Eloquent {
 		if (is_object($route)) {
 			$statistic->target_url = $route->uri();
 			$statistic->destination_name = $route->getName();
+			$statistic->method = $route->methods()[0];
 		}
-		$statistic->method = Request::method();
 		
 		if (Auth::check()) {
 			$userid = Config::get('statistics.user_id');

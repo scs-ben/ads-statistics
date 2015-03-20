@@ -14,5 +14,5 @@
 Route::matched(function($route, $request)
 {
 	$statistic = new Statistic;
-	$statistic->logStatistics($route, $request, Session::get('statistic_id'));
+	$statistic->logStatistics($route, $request, Session::get('error_statistic_id'));
 });

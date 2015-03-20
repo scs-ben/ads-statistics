@@ -7,14 +7,17 @@ The module will track the page view history for all users of the associated webs
 
 Once configired, this plugin will automatically save page viewing history to the database.
 
-_(Make sure to run "php artisan migrate --package=ads/statistics" if updating)_
+_(Make sure to run "php artisan migrate" if updating)_
 
 Step 1:
 
 Set up composer, add the package to your require tag:
 ```
 "ads/statistics": "dev-master"
+
+(if using Laravel 4, use "1.*@dev")
 ```
+
 run
 ```
 php composer update
@@ -24,7 +27,7 @@ Step 2:
 
 run migration: 
 ```
-php artisan migrate --package=ads/statistics
+php artisan migrate
 ```
 
 Step 3:
@@ -44,12 +47,12 @@ Step 4:
 
 Run:
 ```
-php artisan config:publish ads/statistics
+php artisan vendor:publish
 ```
 
 Step 5:
 
-Edit the _<b>app/config/packages/ads/statistics/config.php</b>_ file.
+Edit the _<b>config/statistics.php</b>_ file.
 
 Please enter the column names from your user database table.
 
