@@ -41,6 +41,16 @@ and
 'Statistic'       => 'Ads\Statistics\Statistic',
 ```
 
+In order to log 500 errors, you'll need to add some code to the app/Exceptions/Handler.php
+Add to the render function before the return:
+```
+if ($this->isHttpException($e)) {
+	\Statistic::httpError($request, $e);
+} else {
+	\Statistic::fatalError($request, $e);
+}
+```
+
 _* Steps 4,5 are not necessary if you don't have user authentication_
 
 Step 4:
