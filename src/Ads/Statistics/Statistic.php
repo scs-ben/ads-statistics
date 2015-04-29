@@ -18,7 +18,8 @@ class Statistic extends \Eloquent {
 	{
 		if (!empty(Session::get('statistic_id')))
 			$statistic = Statistic::find(Session::get('statistic_id'));
-		else
+		
+		if (!is_object($statistic))
 			$statistic = new Statistic;
 		
 		$parameters = $request->server->all();
@@ -47,7 +48,8 @@ class Statistic extends \Eloquent {
 	{
 		if (!empty(Session::get('statistic_id')))
 			$statistic = Statistic::find(Session::get('statistic_id'));
-		else
+		
+		if (!is_object($statistic))
 			$statistic = new Statistic;
 		
 		$parameters = $request->server->all();
@@ -79,7 +81,8 @@ class Statistic extends \Eloquent {
 		
 		if (!empty($id))
 			$statistic = Statistic::find($id);
-		else
+		
+		if (!is_object($statistic))
 			$statistic = new Statistic;
 		
 		if (empty($id)) {
