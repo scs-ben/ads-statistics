@@ -16,8 +16,7 @@ class Statistic extends \Eloquent {
 	
 	public static function httpError($request, Exception $e)
 	{
-		if (!empty(Session::get('statistic_id')))
-			$statistic = Statistic::find(Session::get('statistic_id'));
+		$statistic = Statistic::find(Session::get('statistic_id'));
 		
 		if (!is_object($statistic))
 			$statistic = new Statistic;
