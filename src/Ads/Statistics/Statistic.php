@@ -45,8 +45,7 @@ class Statistic extends \Eloquent {
 	
 	public static function fatalError($request, Exception $e)
 	{
-		if (!empty(Session::get('statistic_id')))
-			$statistic = Statistic::find(Session::get('statistic_id'));
+		$statistic = Statistic::find(Session::get('statistic_id'));
 		
 		if (!is_object($statistic))
 			$statistic = new Statistic;
@@ -78,8 +77,7 @@ class Statistic extends \Eloquent {
 	{
 		$parameters = $request->server->all();
 		
-		if (!empty($id))
-			$statistic = Statistic::find($id);
+		$statistic = Statistic::find($id);
 		
 		if (!is_object($statistic))
 			$statistic = new Statistic;
