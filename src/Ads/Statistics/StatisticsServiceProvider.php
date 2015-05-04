@@ -25,6 +25,8 @@ class StatisticsServiceProvider extends ServiceProvider {
 		], 'migrations');
 		
 		include __DIR__.'/../../routes.php';
+		
+		include __DIR__.'/StatisticHandler.php';
 	}
 	
 	/**
