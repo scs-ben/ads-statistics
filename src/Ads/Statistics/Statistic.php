@@ -23,8 +23,7 @@ class Statistic extends \Eloquent {
 		
 		$parameters = $request->server->all();
 		
-		if (!empty($parameters['REDIRECT_STATUS']))
-			$statistic->http_code = $parameters['REDIRECT_STATUS'];
+		$statistic->http_code = $e->getStatusCode();
 		if (!empty($parameters['REMOTE_ADDR']))
 			$statistic->ip_address = $parameters['REMOTE_ADDR'];
 		if (!empty($parameters['REQUEST_URI']))
