@@ -13,9 +13,9 @@ Step 1:
 
 Set up composer, add the package to your require tag:
 ```
-"ads/statistics": "dev-master"
+"ads/statistics": "2.0.*"
 
-(if using Laravel 4, use "1.*@dev")
+(if using Laravel 4, use "1.0.*")
 ```
 
 run
