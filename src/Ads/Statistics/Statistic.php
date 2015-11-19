@@ -6,7 +6,6 @@ use \Exception;
 use \Input;
 use \Request;
 use \Route;
-use \Session;
 use \View;
 
 class Statistic extends \Eloquent {
@@ -16,10 +15,7 @@ class Statistic extends \Eloquent {
 	
 	public static function httpError($request, Exception $e)
 	{
-		$statistic = Statistic::find(Session::get('statistic_id'));
-		
-		if (!is_object($statistic))
-			$statistic = new Statistic;
+		$statistic = new Statistic;
 		
 		$parameters = $request->server->all();
 		
@@ -38,16 +34,11 @@ class Statistic extends \Eloquent {
 		$statistic->errorMessage = $e->getMessage();
 		
 		$statistic->save();
-		
-		Session::flash('error_statistic_id', $statistic->id);
 	}
 	
 	public static function fatalError($request, Exception $e)
 	{
-		$statistic = Statistic::find(Session::get('statistic_id'));
-		
-		if (!is_object($statistic))
-			$statistic = new Statistic;
+		$statistic = new Statistic;
 		
 		$parameters = $request->server->all();
 		
@@ -68,8 +59,6 @@ class Statistic extends \Eloquent {
 		$statistic->errorMessage = $e->getMessage();
 		
 		$statistic->save();
-		
-		Session::flash('error_statistic_id', $statistic->id);
 	}
 	
 	public function logStatistics($route, $request, $id = null)
@@ -131,8 +120,5 @@ class Statistic extends \Eloquent {
 		catch( PDOException $Exception ) {
 			Log::error($Exception);
 		}
-		
-		
-		Session::flash('statistic_id', $statistic->id);
 	}
 }
