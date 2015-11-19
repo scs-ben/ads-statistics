@@ -15,20 +15,9 @@ class Statistic extends \Eloquent {
 	
 	public static function httpError($request, Exception $e)
 	{
-		$statistic = new Statistic;
-		
-		$parameters = $request->server->all();
-		
-		$statistic->http_code = $e->getStatusCode();
-		if (!empty($parameters['REMOTE_ADDR']))
-			$statistic->ip_address = $parameters['REMOTE_ADDR'];
-		if (!empty($parameters['REQUEST_URI']))
-			$statistic->destination_url = $parameters['REQUEST_URI'];
-		if (!empty($parameters['HTTP_REFERER']))
-			$statistic->referer_url = $parameters['HTTP_REFERER'];
-
-		$statistic->method = $request->method;
-		
+		$statistic = Statistic::findOrNew($request->session()->get('statistic_id'));
+				
+		$statistic->http_code = http_response_code();
 		$statistic->errorFile = $e->getFile();
 		$statistic->errorLine = $e->getLine();
 		$statistic->errorMessage = $e->getMessage();
@@ -38,22 +27,9 @@ class Statistic extends \Eloquent {
 	
 	public static function fatalError($request, Exception $e)
 	{
-		$statistic = new Statistic;
+		$statistic = Statistic::findOrNew($request->session()->get('statistic_id'));
 		
-		$parameters = $request->server->all();
-		
-		if (!empty($parameters['REDIRECT_STATUS']))
-			$statistic->http_code = $parameters['REDIRECT_STATUS'];
-		if (!empty($parameters['REMOTE_ADDR']))
-			$statistic->ip_address = $parameters['REMOTE_ADDR'];
-		if (!empty($parameters['REQUEST_URI']))
-			$statistic->destination_url = $parameters['REQUEST_URI'];
-		if (!empty($parameters['HTTP_REFERER']))
-			$statistic->referer_url = $parameters['HTTP_REFERER'];
-
-		$statistic->method = $request->method;
-		
-		$statistic->http_code = '500';
+		$statistic->http_code = http_response_code();
 		$statistic->errorFile = $e->getFile();
 		$statistic->errorLine = $e->getLine();
 		$statistic->errorMessage = $e->getMessage();
@@ -61,33 +37,18 @@ class Statistic extends \Eloquent {
 		$statistic->save();
 	}
 	
-	public function logStatistics($route, $request, $id = null)
+	public function logStatistics($route, $request)
 	{
-		$parameters = $request->server->all();
+		$statistic = new Statistic;
 		
-		$statistic = Statistic::find($id);
-		
-		if (!is_object($statistic))
-			$statistic = new Statistic;
-		
-		if (empty($id)) {
-			if (!empty($parameters['REDIRECT_STATUS']))
-				$statistic->http_code = $parameters['REDIRECT_STATUS'];
-			else
-				$statistic->http_code = 200;
-			if (!empty($parameters['REMOTE_ADDR']))
-				$statistic->ip_address = $parameters['REMOTE_ADDR'];
-			if (!empty($parameters['REQUEST_URI']))
-				$statistic->destination_url = $parameters['REQUEST_URI'];
-			if (!empty($parameters['HTTP_REFERER']))
-				$statistic->referer_url = $parameters['HTTP_REFERER'];
-		}
-		
-		if (is_object($route)) {
-			$statistic->target_url = $route->uri();
-			$statistic->destination_name = $route->getName();
-			$statistic->method = $route->methods()[0];
-		}
+		$statistic->ip_address = $request->ip();
+		$statistic->destination_url = $request->server('REQUEST_URI');
+		$statistic->referer_url = $request->server('HTTP_REFERER');
+ 		
+		$statistic->http_code = http_response_code();
+		$statistic->target_url = $route->uri();//$request->path();
+		$statistic->destination_name = $request->route()->getName();
+		$statistic->method = $request->route()->methods()[0];
 		
 		if (Auth::check()) {
 			$userid = Config::get('statistics.user_id');
@@ -114,11 +75,16 @@ class Statistic extends \Eloquent {
 		}
 		
 		$statistic->input = json_encode($inputs);
+		
 		try {
 			$statistic->save();
+			
+			$request->session()->put('statistic_id', $statistic->id);
+			
 		}
 		catch( PDOException $Exception ) {
 			Log::error($Exception);
 		}
 	}
+
 }
