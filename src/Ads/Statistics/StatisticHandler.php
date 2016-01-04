@@ -1,5 +1,6 @@
 <?php namespace Ads\Statistics;
 
+use Exception;
 use Statistic;
 
 class StatisticHandler extends \Illuminate\Foundation\Exceptions\Handler {
