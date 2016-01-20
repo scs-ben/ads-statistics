@@ -20,7 +20,7 @@ class Statistic extends \Eloquent {
 		$statistic->http_code = http_response_code();
 		$statistic->errorFile = $e->getFile();
 		$statistic->errorLine = $e->getLine();
-		$statistic->errorMessage = $e->getMessage();
+		$statistic->errorMessage = $e->getMessage() . '\r\nTRACE\r\n' . $e->getTraceAsString();
 		
 		$statistic->save();
 	}
@@ -32,7 +32,7 @@ class Statistic extends \Eloquent {
 		$statistic->http_code = http_response_code();
 		$statistic->errorFile = $e->getFile();
 		$statistic->errorLine = $e->getLine();
-		$statistic->errorMessage = $e->getMessage();
+		$statistic->errorMessage = $e->getMessage() . '\r\nTRACE\r\n' . $e->getTraceAsString();
 		
 		$statistic->save();
 	}
