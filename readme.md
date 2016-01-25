@@ -42,13 +42,15 @@ and
 ```
 
 In order to log 500 errors, you'll need to add some code to the app/Exceptions/Handler.php
-Add to the render function before the return:
+Add to the *render* function before the return:
 ```
 if ($this->isHttpException($e)) {
-	\Statistic::httpError($request, $e);
-} else {
-	\Statistic::fatalError($request, $e);
+	\Statistic::error($e);
 }
+```
+Add to the *report* function before the return:
+```
+\Statistic::error($e);
 ```
 
 _* Steps 4,5 are not necessary if you don't have user authentication_
@@ -72,4 +74,17 @@ For example:
   'first_name' => 'first_name',
 	'last_name' => 'last_name',
 	'protected_fields' => ['password'],
+```
+
+_* Step 6 is not necessary if you don't want to email server errors
+Edit the _<b>config/statistics.php</b>_ file.
+
+Please enter the column names from your user database table.
+
+For example:
+```
+...
+'mandrill_secret' => MANDRILL_API_KEY,
+'error_email' => 'destination@for.errors'
+...
 ```
