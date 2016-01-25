@@ -15,5 +15,6 @@ return array(
     'first_name' => null,
     'last_name' => null,
 	'protected_fields' => ['_token','password'],
+	'mandrill_secret' = '',
     
 );
