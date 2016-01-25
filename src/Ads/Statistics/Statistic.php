@@ -13,21 +13,7 @@ class Statistic extends \Eloquent {
 	// Don't forget to fill this array
 	protected $fillable = [];
 	
-	public static function httpError($request, Exception $e)
-	{
-		$statistic = Statistic::findOrNew($request->session()->get('statistic_id'));
-				
-		$statistic->http_code = http_response_code();
-		$statistic->errorFile = $e->getFile();
-		$statistic->errorLine = $e->getLine();
-		$statistic->errorMessage = $e->getMessage() . PHP_EOL . 'TRACE' . PHP_EOL . $e->__toString();
-		
-		$statistic->save();
-		
-		$this->emailError($e);
-	}
-	
-	public static function fatalError(Exception $e)
+	public static function error(Exception $e)
 	{
 		$statistic = Statistic::findOrNew(request()->session()->get('statistic_id'));
 		
@@ -38,7 +24,17 @@ class Statistic extends \Eloquent {
 		
 		$statistic->save();
 		
-		self::emailError($e);
+		self::emailError($e);	
+	}
+	
+	public static function httpError($request, Exception $e)
+	{
+		self::error($e);
+	}
+	
+	public static function fatalError($request, Exception $e)
+	{
+		self::error($e);
 	}
 	
 	private static function emailError(Exception $e)
