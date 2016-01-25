@@ -27,9 +27,9 @@ class Statistic extends \Eloquent {
 		$this->emailError($e);
 	}
 	
-	public static function fatalError($request, Exception $e)
+	public static function fatalError(Exception $e)
 	{
-		$statistic = Statistic::findOrNew($request->session()->get('statistic_id'));
+		$statistic = Statistic::findOrNew(request()->session()->get('statistic_id'));
 		
 		$statistic->http_code = http_response_code();
 		$statistic->errorFile = $e->getFile();
@@ -38,20 +38,21 @@ class Statistic extends \Eloquent {
 		
 		$statistic->save();
 		
-		$this->emailError($e);
+		self::emailError($e);
 	}
 	
-	private function emailError(Exception $e)
+	private static function emailError(Exception $e)
 	{
-		if (!empty(Config::get('statistics.mandrill_secret')) && !empty(Config::get('services.error_email'))) {
-			$mandrill = new \Mandrill(Config::get('services.mandrill-secret'));
-			$message = new stdClass;
+		if (!empty(Config::get('statistics.mandrill_secret')) && !empty(Config::get('statistics.error_email'))) {
+			$mandrill = new \Mandrill(Config::get('statistics.mandrill_secret'));
+			$message = new \stdClass;
 			$message->html = 'File: ' . $e->getFile()  . ' Line: ' . $e->getLine() . PHP_EOL . 'TRACE' . PHP_EOL . $e->getMessage() . PHP_EOL . 'TRACE' . PHP_EOL . $e->__toString();
+			$message->html = nl2br($message->html);
 			$message->text = htmlentities($message->html);
 			$message->subject = "Server Error for " . Request::url();
-			$message->from_email = Config::get('services.error_email');
+			$message->from_email = Config::get('statistics.error_email');
 			$message->from_name  = "Server Error";
-			$message->to = array(array("email" => Config::get('services.error_email')));
+			$message->to = array(array("email" => Config::get('statistics.error_email')));
 			$message->track_opens = true;
 			
 			$response = $mandrill->messages->send($message);
