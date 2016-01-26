@@ -11,8 +11,11 @@
 |
 */
 
-Route::matched(function($route, $request)
+Route::matched(function($route, $request = null)
 {
+	if (empty($request)) {
+		$request = request();
+	}
 	$statistic = new Statistic;
 	$statistic->logStatistics($route, $request, Session::get('error_statistic_id'));
 });
