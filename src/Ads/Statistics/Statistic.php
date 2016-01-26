@@ -3,7 +3,7 @@
 use \Auth;
 use \Config;
 use \Exception;
-use \Input;
+use Illuminate\Support\Facades\Input;
 use \Request;
 use \Route;
 use \View;
@@ -15,7 +15,11 @@ class Statistic extends \Eloquent {
 	
 	public static function error(Exception $e)
 	{
-		$statistic = Statistic::findOrNew(request()->session()->get('statistic_id'));
+		if (request()->hasSession()) {
+			$statistic = Statistic::findOrNew(request()->session()->get('statistic_id'));
+		} else {
+			$statistic = new Statistic;
+		}
 		
 		$statistic->http_code = http_response_code();
 		$statistic->errorFile = $e->getFile();
@@ -64,7 +68,7 @@ class Statistic extends \Eloquent {
 		$statistic->referer_url = $request->server('HTTP_REFERER');
  		
 		$statistic->http_code = http_response_code();
-		$statistic->target_url = $route->uri();//$request->path();
+		$statistic->target_url = $request->path();
 		$statistic->destination_name = $request->route()->getName();
 		$statistic->method = $request->route()->methods()[0];
 		
