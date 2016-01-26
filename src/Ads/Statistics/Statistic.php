@@ -101,7 +101,9 @@ class Statistic extends \Eloquent {
 		try {
 			$statistic->save();
 			
-			$request->session()->put('statistic_id', $statistic->id);
+			if ($request->hasSession()) {
+				$request->session()->put('statistic_id', $statistic->id);
+			}
 			
 		}
 		catch( PDOException $Exception ) {
