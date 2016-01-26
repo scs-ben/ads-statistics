@@ -44,18 +44,26 @@ class Statistic extends \Eloquent {
 	private static function emailError(Exception $e)
 	{
 		if (!empty(Config::get('statistics.mandrill_secret')) && !empty(Config::get('statistics.error_email'))) {
-			$mandrill = new \Mandrill(Config::get('statistics.mandrill_secret'));
-			$message = new \stdClass;
-			$message->html = 'File: ' . $e->getFile()  . ' Line: ' . $e->getLine() . PHP_EOL . 'TRACE' . PHP_EOL . $e->getMessage() . PHP_EOL . 'TRACE' . PHP_EOL . $e->__toString();
-			$message->html = nl2br($message->html);
-			$message->text = htmlentities($message->html);
-			$message->subject = "Server Error for " . Request::url();
-			$message->from_email = Config::get('statistics.error_email');
-			$message->from_name  = "Server Error";
-			$message->to = array(array("email" => Config::get('statistics.error_email')));
-			$message->track_opens = true;
-			
-			$response = $mandrill->messages->send($message);
+			$mandrill = new \Mandrill(config('statistics.mandrill_secret'));
+			$html = 'File: ' . $e->getFile()  . ' Line: ' . $e->getLine() . PHP_EOL . 'TRACE' . PHP_EOL . $e->getMessage() . PHP_EOL . 'TRACE' . PHP_EOL . $e->__toString();
+			$html = nl2br($html);
+			$message = [
+				'html' => $html,
+				'text' => htmlentities($html),
+				'subject' => "Server Error for " . Request::url(),
+				'from_email' => Config::get('statistics.error_email'),
+				'from_name'  => "Server Error",
+				'to' => [
+							[
+								'email' => Config::get('statistics.error_email'),
+								'type' => 'to'
+							]
+						],
+				'track_opens' => true
+			];
+			$async = false;
+    		$ip_pool = 'Main Pool';
+			$response = $mandrill->messages->send($message, $async, $ip_pool);
 		}
 	}
 	
