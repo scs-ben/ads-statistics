@@ -20,15 +20,21 @@ class Statistic extends \Eloquent {
 		} else {
 			$statistic = new Statistic;
 		}
-		
-		$statistic->http_code = http_response_code();
+
+		self::logDetails($statistic, request());
+
+		$statistic->http_code = '500';//http_response_code();
 		$statistic->errorFile = $e->getFile();
 		$statistic->errorLine = $e->getLine();
 		$statistic->errorMessage = $e->getMessage() . PHP_EOL . 'TRACE' . PHP_EOL . $e->__toString();
 		
 		$statistic->save();
+
+		if (request()->hasSession()) {
+			request()->session()->put('statistic_id', $statistic->id);
+		}
 		
-		self::emailError($e);	
+		self::emailError($e);
 	}
 	
 	public static function httpError($request, Exception $e)
@@ -73,40 +79,7 @@ class Statistic extends \Eloquent {
 	{
 		$statistic = new Statistic;
 		
-		$statistic->ip_address = $request->ip();
-		$statistic->destination_url = $request->server('REQUEST_URI');
-		$statistic->referer_url = $request->server('HTTP_REFERER');
- 		
-		$statistic->http_code = http_response_code();
-		$statistic->target_url = $request->path();
-		$statistic->destination_name = $request->route()->getName();
-		$statistic->method = $request->route()->methods()[0];
-		
-		if (Auth::check()) {
-			$userid = Config::get('statistics.user_id');
-			$firstname = Config::get('statistics.first_name');
-			$lastname = Config::get('statistics.last_name');
-			
-			if (!empty($userid))
-				$statistic->userid = Auth::user()->$userid;
-			if (!empty($firstname))
-				$statistic->firstname = Auth::user()->$firstname;
-			if (!empty($lastname))
-				$statistic->lastname = Auth::user()->$lastname;
-		}
-		
-		$inputs = Input::all();
-		
-		if (count($inputs) > 0) {
-			$restrictedFields = Config::get('statistics.protected_fields');
-			
-			foreach ($restrictedFields as $restrictedField) {
-				if (isset($inputs[$restrictedField]))
-					unset($inputs[$restrictedField]);
-			}
-		}
-		
-		$statistic->input = json_encode($inputs);
+		$this->logDetails($statistic, $request);
 		
 		try {
 			$statistic->save();
@@ -119,6 +92,47 @@ class Statistic extends \Eloquent {
 		catch( PDOException $Exception ) {
 			Log::error($Exception);
 		}
+	}
+
+	private static function logDetails(&$statistic, $request)
+	{
+		$statistic->ip_address = $request->ip();
+		$statistic->destination_url = $request->server('REQUEST_URI');
+		$statistic->referer_url = $request->server('HTTP_REFERER');
+ 		
+		$statistic->http_code = http_response_code();
+		$statistic->target_url = $request->path();
+
+		if (!empty($request->route())) {
+			$statistic->destination_name = $request->route()->getName();
+			$statistic->method = $request->route()->methods()[0];
+		}
+		
+		if (auth()->check()) {
+			$userid = config('statistics.user_id');
+			$firstname = config('statistics.first_name');
+			$lastname = config('statistics.last_name');
+			
+			if (!empty($userid))
+				$statistic->userid = auth()->user()->$userid;
+			if (!empty($firstname))
+				$statistic->firstname = auth()->user()->$firstname;
+			if (!empty($lastname))
+				$statistic->lastname = auth()->user()->$lastname;
+		}
+		
+		$inputs = Input::all();
+		
+		if (count($inputs) > 0) {
+			$restrictedFields = config('statistics.protected_fields');
+			
+			foreach ($restrictedFields as $restrictedField) {
+				if (isset($inputs[$restrictedField]))
+					unset($inputs[$restrictedField]);
+			}
+		}
+		
+		$statistic->input = json_encode($inputs);
 	}
 
 }
