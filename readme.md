@@ -34,7 +34,7 @@ Step 3:
 
 Add alias and service provider to app/config/app.php
 ```
-'Ads\Statistics\StatisticsServiceProvider',
+Ads\Statistics\StatisticsServiceProvider::class,
 ```
 and
 ```
@@ -42,15 +42,14 @@ and
 ```
 
 In order to log 500 errors, you'll need to add some code to the app/Exceptions/Handler.php
-Add to the *render* function before the return:
+Add to or create the *report* function before the return:
 ```
-if ($this->isHttpException($e)) {
-	\Statistic::error($e);
+public function report(Exception $e)
+{
+    \Statistic::error($e);
+	
+    return parent::report($e);
 }
-```
-Add to the *report* function before the return:
-```
-\Statistic::error($e);
 ```
 
 _* Steps 4,5 are not necessary if you don't have user authentication_
