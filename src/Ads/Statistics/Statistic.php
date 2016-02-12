@@ -43,7 +43,7 @@ class Statistic extends \Eloquent {
 	
 	private static function emailError(Exception $e)
 	{
-		if ( $e->getStatusCode() >= 500 ) {
+		if (! $e instanceOf NotFoundHttpException ) {
 			if (!empty(Config::get('statistics.mandrill_secret')) && !empty(Config::get('statistics.error_email'))) {
 				$mandrill = new \Mandrill(config('statistics.mandrill_secret'));
 				$html = 'File: ' . $e->getFile()  . ' Line: ' . $e->getLine() . PHP_EOL . 'TRACE' . PHP_EOL . $e->getMessage() . PHP_EOL . 'TRACE' . PHP_EOL . $e->__toString();
