@@ -47,7 +47,7 @@ and
 
 Step 3b: (for Laravel >= 5.2)
 
-We need to append the 'auth' middleware group to run the Statistics logging:
+We need to append the 'auth' middleware group to run the Statistics logging (app/Http/Kernel.php):
 ```
 protected $middlewareGroups = [
 'auth' => [
