@@ -13,6 +13,10 @@ Step 1:
 
 Set up composer, add the package to your require tag:
 ```
+For Laravel >=5.2
+"ads/statistics": "2.1.*"
+
+For Laravel 5.0/5.1 use:
 "ads/statistics": "2.0.*"
 
 (if using Laravel 4, use "1.0.*")
@@ -41,6 +45,21 @@ and
 'Statistic'       => 'Ads\Statistics\Statistic',
 ```
 
+Step 3b: (for Laravel >= 5.2)
+
+We need to append the 'auth' middleware group to run the Statistics logging:
+```
+protected $middlewareGroups = [
+'auth' => [
+    \App\Http\Middleware\Authenticate::class,
+    \Ads\Statistics\Statistic::class
+],
+...
+```
+
+We also need to remove the 'auth' route from the $routeMiddleware.
+
+Step 3c:
 In order to log 500 errors, you'll need to add some code to the app/Exceptions/Handler.php
 Add to or create the *report* function before the return:
 ```
