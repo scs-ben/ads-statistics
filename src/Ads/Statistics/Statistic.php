@@ -13,6 +13,17 @@ class Statistic extends \Eloquent {
 	// Don't forget to fill this array
 	protected $fillable = [];
 	
+	public function handle($request, \Closure $next, $guard = null)
+    {
+    	if (empty($request)) {
+			$request = request();
+		}
+		// $statistic = new Statistic;
+		$this->logStatistics($request->route(), $request, $request->session('error_statistic_id'));
+
+		return $next($request);
+    }
+
 	public static function error(Exception $e)
 	{
 		if (request()->hasSession()) {
@@ -112,7 +123,7 @@ class Statistic extends \Eloquent {
 			$userid = config('statistics.user_id');
 			$firstname = config('statistics.first_name');
 			$lastname = config('statistics.last_name');
-			
+
 			if (!empty($userid))
 				$statistic->userid = auth()->user()->$userid;
 			if (!empty($firstname))
