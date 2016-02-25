@@ -24,8 +24,6 @@ class StatisticsServiceProvider extends ServiceProvider {
 				__DIR__.'/../database/migrations/' => base_path('/database/migrations')
 		], 'migrations');
 		
-		include __DIR__.'/../../routes.php';
-		
 		include __DIR__.'/StatisticHandler.php';
 	}
 	
