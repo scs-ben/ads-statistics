@@ -4,11 +4,12 @@ use \Auth;
 use \Config;
 use \Exception;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Database\Eloquent\Model;
 use \Request;
 use \Route;
 use \View;
 
-class Statistic extends \Eloquent {
+class Statistic extends Model {
 
 	// Don't forget to fill this array
 	protected $fillable = [];
