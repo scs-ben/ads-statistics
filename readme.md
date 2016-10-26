@@ -42,22 +42,21 @@ Ads\Statistics\StatisticsServiceProvider::class,
 ```
 and
 ```
-'Statistic'       => 'Ads\Statistics\Statistic',
+'Statistic' => Ads\Statistics\Statistic::class,
 ```
 
 Step 3b: (for Laravel >= 5.2)
 
-We need to append the 'auth' middleware group to run the Statistics logging (app/Http/Kernel.php):
+We need to append the 'web' middleware group to run the Statistics logging (app/Http/Kernel.php):
 ```
 protected $middlewareGroups = [
-'auth' => [
-    \App\Http\Middleware\Authenticate::class,
-    \Ads\Statistics\Statistic::class
+'web' => [
+    ...
+    \Ads\Statistics\Statistic::class,
+    ...
 ],
 ...
 ```
-
-We also need to remove the 'auth' route from the $routeMiddleware.
 
 Step 3c:
 In order to log 500 errors, you'll need to add some code to the app/Exceptions/Handler.php
