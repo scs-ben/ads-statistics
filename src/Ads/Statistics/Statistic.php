@@ -1,15 +1,17 @@
-<?php namespace Ads\Statistics;
+<?php 
+
+namespace Ads\Statistics;
 
 use \Auth;
 use \Config;
 use \Exception;
 use Illuminate\Support\Facades\Input;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model as Eloquent;
 use \Request;
 use \Route;
 use \View;
 
-class Statistic extends Model {
+class Statistic extends Eloquent {
 
 	// Don't forget to fill this array
 	protected $fillable = [];
@@ -25,10 +27,14 @@ class Statistic extends Model {
 		return $next($request);
     }
 
-	public static function error(Exception $e)
+	public static function error(\Exception $e)
 	{
 		if (request()->hasSession()) {
-			$statistic = Statistic::findOrNew(request()->session()->get('statistic_id'));
+			try {
+				$statistic = Statistic::findOrNew(request()->session()->get('statistic_id'));
+			} catch (\Exception $e) {
+				\Log::error($e->getMessage());
+			}
 		} else {
 			$statistic = new Statistic;
 		}
@@ -40,7 +46,11 @@ class Statistic extends Model {
 		$statistic->errorLine = $e->getLine();
 		$statistic->errorMessage = $e->getMessage() . PHP_EOL . 'TRACE' . PHP_EOL . $e->__toString();
 		
-		$statistic->save();
+		try {
+			$statistic->save();
+		} catch (Exception $e) {
+			\Log::error($e->getMessage());
+		}
 
 		if (request()->hasSession()) {
 			request()->session()->put('statistic_id', $statistic->id);
