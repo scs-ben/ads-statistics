@@ -25,7 +25,7 @@ class CreateStatisticsTable extends Migration {
 			$table->string('userid', 50)->nullable();
 			$table->string('errorFile', 128)->nullable();
 			$table->string('errorLine', 64)->nullable();
-			$table->string('errorMessage', 64)->nullable();
+			$table->text('errorMessage')->nullable();
 			$table->text('input')->nullable();
 			$table->timestamps();
 		});
