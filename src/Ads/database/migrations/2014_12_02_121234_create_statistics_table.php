@@ -23,6 +23,8 @@ class CreateStatisticsTable extends Migration {
 			$table->string('referer_url', 64)->nullable();
 			$table->string('method', 16)->nullable();
 			$table->string('userid', 50)->nullable();
+			$table->string('firstname', 50)->nullable();
+			$table->string('lastname', 50)->nullable();
 			$table->string('errorFile', 128)->nullable();
 			$table->string('errorLine', 64)->nullable();
 			$table->text('errorMessage')->nullable();
