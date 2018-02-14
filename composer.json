@@ -2,7 +2,7 @@
     "name": "ads/statistics",
     "description": "Tracks basic user information to generate statistical data on page usage. Also provides additional information to debug 500 errors",
     "keywords": ["laravel", "administrative site usage statistics", "additional error debugging"],
-	"license": "LGPLv3",
+	"license": "GPL-3.0-or-later",
     "authors": [
         {
             "name": "Agility Data Systems",
