@@ -154,7 +154,7 @@ class Statistic extends Eloquent {
 			}
 		}
 		
-		$statistic->input = json_encode($inputs);
+		$statistic->input = substr(json_encode($inputs), 0, 2048);
 	}
 
 }
