@@ -2,56 +2,54 @@
 
 namespace Ads\Statistics;
 
+
+use Closure;
 use Config;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Http\Request as HttpRequest;
+use Request;
 
 class Statistic extends Model {
 
 	// Don't forget to fill this array
 	protected $fillable = [];
 	
-	public function handle($request, \Closure $next, $guard = null)
+	public function handle(HttpRequest $request, Closure $next)
     {
     	if (empty($request)) {
 			$request = request();
 		}
-		// $statistic = new Statistic;
-		$this->logStatistics($request->route(), $request, $request->session('error_statistic_id'));
+		
+		$user = null;
+
+		if (Auth::check()) {
+			$user = Auth::user();
+		}
+
+		$this->logStatistics($request->route(), $request, $user);
 
 		return $next($request);
     }
 
-	public static function error(Exception $e)
+	public static function error(Exception $e, $user = null)
 	{
-		if (request()->hasSession()) {
-			try {
-				$statistic = Statistic::findOrNew(request()->session()->get('statistic_id'));
-			} catch (Exception $e) {
-				\Log::error($e->getMessage());
-			}
-		} else {
-			$statistic = new Statistic;
-		}
+		// $statistic = new Statistic;
 
-		self::logDetails($statistic, request());
+		// self::logDetails($statistic, request(), $user);
 
-		$statistic->http_code = '500';//http_response_code();
-		$statistic->errorFile = $e->getFile();
-		$statistic->errorLine = $e->getLine();
-		$statistic->errorMessage = $e->getMessage() . PHP_EOL . 'TRACE' . PHP_EOL . $e->__toString();
+		// $statistic->http_code = '500';//http_response_code();
+		// $statistic->errorFile = $e->getFile();
+		// $statistic->errorLine = $e->getLine();
+		// $statistic->errorMessage = $e->getMessage() . PHP_EOL . 'TRACE' . PHP_EOL . $e->__toString();
 		
-		try {
-			$statistic->save();
-		} catch (Exception $e) {
-			\Log::error($e->getMessage());
-		}
-
-		if (request()->hasSession()) {
-			request()->session()->put('statistic_id', $statistic->id);
-		}
+		// try {
+		// 	$statistic->save();
+		// } catch (Exception $e) {
+		// 	\Log::error($e->getMessage());
+		// }
 	}
 	
 	public static function httpError($request, Exception $e)
@@ -64,11 +62,11 @@ class Statistic extends Model {
 		self::error($e);
 	}
 	
-	public function logStatistics($route, $request)
+	public function logStatistics($route, $request, $user)
 	{
 		$statistic = new Statistic;
 		
-		$this->logDetails($statistic, $request);
+		$this->logDetails($statistic, $request, $user);
 		
 		try {
 			$statistic->save();
@@ -83,7 +81,7 @@ class Statistic extends Model {
 		}
 	}
 
-	private static function logDetails(&$statistic, $request)
+	private static function logDetails(&$statistic, $request, $user)
 	{
 		$statistic->ip_address = $request->ip();
 		$statistic->destination_url = $request->server('REQUEST_URI');
@@ -97,20 +95,20 @@ class Statistic extends Model {
 			$statistic->method = $request->route()->methods()[0];
 		}
 		
-		if (Auth::check()) {
+		if (!empty($user)) {
 			$userid = config('statistics.user_id');
 			$firstname = config('statistics.first_name');
 			$lastname = config('statistics.last_name');
 
 			if (!empty($userid))
-				$statistic->userid = Auth::user()->$userid;
+				$statistic->userid = $user->$userid;
 			if (!empty($firstname))
-				$statistic->firstname = Auth::user()->$firstname;
+				$statistic->firstname = $user->$firstname;
 			if (!empty($lastname))
-				$statistic->lastname = Auth::user()->$lastname;
+				$statistic->lastname = $user->$lastname;
 		}
 		
-		$inputs = Request::input();
+		$inputs = $request->all();
 		
 		if (count($inputs) > 0) {
 			$restrictedFields = config('statistics.protected_fields');
