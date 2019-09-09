@@ -52,8 +52,6 @@ class Statistic extends Model {
 		if (request()->hasSession()) {
 			request()->session()->put('statistic_id', $statistic->id);
 		}
-		
-		self::emailError($e);
 	}
 	
 	public static function httpError($request, Exception $e)
@@ -64,34 +62,6 @@ class Statistic extends Model {
 	public static function fatalError($request, Exception $e)
 	{
 		self::error($e);
-	}
-	
-	private static function emailError(Exception $e)
-	{
-		if (! $e instanceOf NotFoundHttpException ) {
-			if (!empty(Config::get('statistics.mandrill_secret')) && !empty(Config::get('statistics.error_email'))) {
-				$mandrill = new \Mandrill(config('statistics.mandrill_secret'));
-				$html = 'File: ' . $e->getFile()  . ' Line: ' . $e->getLine() . PHP_EOL . 'TRACE' . PHP_EOL . $e->getMessage() . PHP_EOL . 'TRACE' . PHP_EOL . $e->__toString();
-				$html = nl2br($html);
-				$message = [
-					'html' => $html,
-					'text' => htmlentities($html),
-					'subject' => "Server Error for " . Request::url(),
-					'from_email' => Config::get('statistics.error_email'),
-					'from_name'  => "Server Error",
-					'to' => [
-								[
-									'email' => Config::get('statistics.error_email'),
-									'type' => 'to'
-								]
-							],
-					'track_opens' => true
-				];
-				$async = false;
-	    		$ip_pool = 'Main Pool';
-				$response = $mandrill->messages->send($message, $async, $ip_pool);
-			}
-		}
 	}
 	
 	public function logStatistics($route, $request)
