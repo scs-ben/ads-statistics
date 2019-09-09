@@ -1,4 +1,6 @@
-<?php namespace Ads\Statistics;
+<?php 
+
+namespace Ads\Statistics;
 
 use Statistic;
 use Illuminate\Support\ServiceProvider;
