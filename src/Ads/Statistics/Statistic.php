@@ -2,16 +2,13 @@
 
 namespace Ads\Statistics;
 
-use \Auth;
-use \Config;
-use \Exception;
-use Illuminate\Support\Facades\Input;
-use Illuminate\Database\Eloquent\Model as Eloquent;
-use \Request;
-use \Route;
-use \View;
+use Config;
+use Exception;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
 
-class Statistic extends Eloquent {
+class Statistic extends Model {
 
 	// Don't forget to fill this array
 	protected $fillable = [];
@@ -27,12 +24,12 @@ class Statistic extends Eloquent {
 		return $next($request);
     }
 
-	public static function error(\Exception $e)
+	public static function error(Exception $e)
 	{
 		if (request()->hasSession()) {
 			try {
 				$statistic = Statistic::findOrNew(request()->session()->get('statistic_id'));
-			} catch (\Exception $e) {
+			} catch (Exception $e) {
 				\Log::error($e->getMessage());
 			}
 		} else {
@@ -119,7 +116,7 @@ class Statistic extends Eloquent {
 	private static function logDetails(&$statistic, $request)
 	{
 		$statistic->ip_address = $request->ip();
-		$statistic->destination_url = substr($request->server('REQUEST_URI'), 0, 190);
+		$statistic->destination_url = $request->server('REQUEST_URI');
 		$statistic->referer_url = $request->server('HTTP_REFERER');
  		
 		$statistic->http_code = http_response_code();
@@ -143,7 +140,7 @@ class Statistic extends Eloquent {
 				$statistic->lastname = auth()->user()->$lastname;
 		}
 		
-		$inputs = Input::all();
+		$inputs = Request::input();
 		
 		if (count($inputs) > 0) {
 			$restrictedFields = config('statistics.protected_fields');
@@ -154,7 +151,7 @@ class Statistic extends Eloquent {
 			}
 		}
 		
-		$statistic->input = substr(json_encode($inputs), 0, 2048);
+		$statistic->input = json_encode($inputs);
 	}
 
 }
