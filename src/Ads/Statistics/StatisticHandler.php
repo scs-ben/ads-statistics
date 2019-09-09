@@ -1,9 +1,12 @@
-<?php namespace Ads\Statistics;
+<?php 
+
+namespace Ads\Statistics;
 
 use Exception;
+use \Illuminate\Foundation\Exceptions\Handler;
 use Statistic;
 
-class StatisticHandler extends \Illuminate\Foundation\Exceptions\Handler {
+class StatisticHandler extends Handler {
 	/**
 	 * Report or log an exception.
 	 *
