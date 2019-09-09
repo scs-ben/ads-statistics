@@ -97,17 +97,17 @@ class Statistic extends Model {
 			$statistic->method = $request->route()->methods()[0];
 		}
 		
-		if (auth()->check()) {
+		if (Auth::check()) {
 			$userid = config('statistics.user_id');
 			$firstname = config('statistics.first_name');
 			$lastname = config('statistics.last_name');
 
 			if (!empty($userid))
-				$statistic->userid = auth()->user()->$userid;
+				$statistic->userid = Auth::user()->$userid;
 			if (!empty($firstname))
-				$statistic->firstname = auth()->user()->$firstname;
+				$statistic->firstname = Auth::user()->$firstname;
 			if (!empty($lastname))
-				$statistic->lastname = auth()->user()->$lastname;
+				$statistic->lastname = Auth::user()->$lastname;
 		}
 		
 		$inputs = Request::input();
