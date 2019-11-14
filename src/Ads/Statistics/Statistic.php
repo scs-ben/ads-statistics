@@ -119,11 +119,11 @@ class Statistic extends Eloquent {
 	private static function logDetails(&$statistic, $request)
 	{
 		$statistic->ip_address = $request->ip();
-		$statistic->destination_url = substr($request->server('REQUEST_URI'), 0, 190);
-		$statistic->referer_url = $request->server('HTTP_REFERER');
+		$statistic->destination_url = substr($request->server('REQUEST_URI'), 0, 63);
+		$statistic->referer_url = substr($request->server('HTTP_REFERER'), 0, 190);
  		
 		$statistic->http_code = http_response_code();
-		$statistic->target_url = $request->path();
+		$statistic->target_url = substr($request->path(), 0, 63);
 
 		if (!empty($request->route())) {
 			$statistic->destination_name = $request->route()->getName();
