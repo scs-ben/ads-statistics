@@ -23,8 +23,6 @@ class StatisticsServiceProvider extends ServiceProvider {
 		$this->publishes([
 				__DIR__.'/../database/migrations/' => base_path('/database/migrations')
 		], 'migrations');
-		
-		include __DIR__.'/StatisticHandler.php';
 	}
 	
 	/**
