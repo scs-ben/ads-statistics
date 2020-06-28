@@ -5,12 +5,12 @@ namespace Ads\Statistics;
 
 use Closure;
 use Config;
-use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request as HttpRequest;
 use Request;
+use Throwable ;
 
 class Statistic extends Model {
 
@@ -34,30 +34,30 @@ class Statistic extends Model {
 		return $next($request);
     }
 
-	public static function error(Exception $e, $user = null)
+	public static function error(Throwable $e, $user = null)
 	{
-		// $statistic = new Statistic;
+		$statistic = new Statistic;
 
 		// self::logDetails($statistic, request(), $user);
 
-		// $statistic->http_code = '500';//http_response_code();
-		// $statistic->errorFile = $e->getFile();
-		// $statistic->errorLine = $e->getLine();
-		// $statistic->errorMessage = $e->getMessage() . PHP_EOL . 'TRACE' . PHP_EOL . $e->__toString();
+		$statistic->http_code = '500';//http_response_code();
+		$statistic->errorFile = $e->getFile();
+		$statistic->errorLine = $e->getLine();
+		$statistic->errorMessage = $e->getMessage() . PHP_EOL . 'TRACE' . PHP_EOL . $e->__toString();
 		
-		// try {
-		// 	$statistic->save();
-		// } catch (Exception $e) {
-		// 	\Log::error($e->getMessage());
-		// }
+		try {
+			$statistic->save();
+		} catch (Exception $e) {
+			\Log::error($e->getMessage());
+		}
 	}
 	
-	public static function httpError($request, Exception $e)
+	public static function httpError($request, Throwable  $e)
 	{
 		self::error($e);
 	}
 	
-	public static function fatalError($request, Exception $e)
+	public static function fatalError($request, Throwable  $e)
 	{
 		self::error($e);
 	}
@@ -90,21 +90,21 @@ class Statistic extends Model {
 		$statistic->http_code = http_response_code();
 		$statistic->target_url = substr($request->path(), 0, 63);
 
-		if (!empty($request->route())) {
+		if (! empty($request->route())) {
 			$statistic->destination_name = $request->route()->getName();
 			$statistic->method = $request->route()->methods()[0];
 		}
 		
-		if (!empty($user)) {
+		if (! empty($user)) {
 			$userid = config('statistics.user_id');
 			$firstname = config('statistics.first_name');
 			$lastname = config('statistics.last_name');
 
-			if (!empty($userid))
+			if (! empty($userid))
 				$statistic->userid = $user->$userid;
-			if (!empty($firstname))
+			if (! empty($firstname))
 				$statistic->firstname = $user->$firstname;
-			if (!empty($lastname))
+			if (! empty($lastname))
 				$statistic->lastname = $user->$lastname;
 		}
 		
