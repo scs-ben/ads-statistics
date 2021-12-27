@@ -13,13 +13,8 @@ Step 1:
 
 Set up composer, add the package to your require tag:
 ```
-For Laravel >=5.2
-"ads/statistics": "2.1.*"
-
-For Laravel 5.0/5.1 use:
-"ads/statistics": "2.0.*"
-
-(if using Laravel 4, use "1.0.*")
+For Laravel 6,7,8+
+"ads/statistics": "3.0^"
 ```
 
 run
@@ -29,57 +24,32 @@ php composer update
 
 Step 2:
 
-run migration: 
+Publish and run migrations: 
 ```
+php artisan vendor:publish --provider=Ads\Statistics\StatisticsServiceProvider
 php artisan migrate
 ```
 
 Step 3:
 
-Add alias and service provider to app/config/app.php
-```
-Ads\Statistics\StatisticsServiceProvider::class,
-```
-and
-```
-'Statistic' => Ads\Statistics\Statistic::class,
-```
-
-Step 3b: (for Laravel >= 5.2)
-
-We need to append the 'web' middleware group to run the Statistics logging (app/Http/Kernel.php):
-```
-protected $middlewareGroups = [
-'web' => [
-    ...
-    \Ads\Statistics\Statistic::class,
-    ...
-],
-...
-```
-
-Step 3c:
-In order to log 500 errors, you'll need to add some code to the app/Exceptions/Handler.php
+In order to log 500 errors, you'll need to add some code to the app/Exceptions/Handler.php Add this interceptor to the register function
 Add to or create the *report* function before the return:
 ```
-public function report(Exception $e)
+public function register()
 {
-    \Statistic::error($e);
-	
-    return parent::report($e);
+	$this->reportable(function (Throwable $e) {
+	    //
+	});
+
+	$this->reportable(function (\Exception $e) {
+	    \Statistic::error($e);
+	});
 }
 ```
 
-_* Steps 4,5 are not necessary if you don't have user authentication_
+_* Step 4 is only necessary if you have user authentication_
 
 Step 4:
-
-Run:
-```
-php artisan vendor:publish
-```
-
-Step 5:
 
 Edit the _<b>config/statistics.php</b>_ file.
 
@@ -91,17 +61,4 @@ For example:
   'first_name' => 'first_name',
 	'last_name' => 'last_name',
 	'protected_fields' => ['password'],
-```
-
-_* Step 6 is not necessary if you don't want to email server errors
-Edit the _<b>config/statistics.php</b>_ file.
-
-Please enter the column names from your user database table.
-
-For example:
-```
-...
-'mandrill_secret' => MANDRILL_API_KEY,
-'error_email' => 'destination@for.errors'
-...
 ```
