@@ -1,7 +1,7 @@
 ads-statistics
 ==============
 
-<h3>Agility Data Systems Statistics Tracking Module for Laravel</h3>
+<h3>Audit/Error Logging Module for Laravel</h3>
 
 The module will track the page view history for all users of the associated website. The module will log 500 error statistics to help with debugging code. Additionaly, the posted data for form submission will be saved in the database. The settings file has an array option that allows you to remove sensitive files from being saved in the tracking table.
 
