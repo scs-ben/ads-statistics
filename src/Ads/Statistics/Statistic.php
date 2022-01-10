@@ -2,159 +2,128 @@
 
 namespace Ads\Statistics;
 
-use \Auth;
-use \Config;
-use \Exception;
-use Illuminate\Support\Facades\Input;
-use Illuminate\Database\Eloquent\Model as Eloquent;
-use \Request;
-use \Route;
-use \View;
 
-class Statistic extends Eloquent {
+use Closure;
+use Config;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Http\Request as HttpRequest;
+use Request;
+use Throwable ;
+
+class Statistic extends Model {
 
 	// Don't forget to fill this array
 	protected $fillable = [];
-	
-	public function handle($request, \Closure $next, $guard = null)
+
+	public function handle(HttpRequest $request, Closure $next)
     {
     	if (empty($request)) {
 			$request = request();
 		}
-		// $statistic = new Statistic;
-		$this->logStatistics($request->route(), $request, $request->session('error_statistic_id'));
+
+		$user = null;
+
+		if (Auth::check()) {
+			$user = Auth::user();
+		}
+
+		$this->logStatistics($request->route(), $request, $user);
 
 		return $next($request);
     }
 
-	public static function error(\Exception $e)
+	public static function error(Throwable $e, $user = null)
 	{
-		if (request()->hasSession()) {
-			try {
-				$statistic = Statistic::findOrNew(request()->session()->get('statistic_id'));
-			} catch (\Exception $e) {
-				\Log::error($e->getMessage());
-			}
-		} else {
-			$statistic = new Statistic;
-		}
-
-		self::logDetails($statistic, request());
+		$statistic = new Statistic;
 
 		$statistic->http_code = '500';//http_response_code();
 		$statistic->errorFile = $e->getFile();
 		$statistic->errorLine = $e->getLine();
 		$statistic->errorMessage = $e->getMessage() . PHP_EOL . 'TRACE' . PHP_EOL . $e->__toString();
-		
+
 		try {
 			$statistic->save();
 		} catch (Exception $e) {
 			\Log::error($e->getMessage());
 		}
+	}
 
-		if (request()->hasSession()) {
-			request()->session()->put('statistic_id', $statistic->id);
-		}
-		
-		self::emailError($e);
-	}
-	
-	public static function httpError($request, Exception $e)
+	public static function httpError($request, Throwable  $e)
 	{
 		self::error($e);
 	}
-	
-	public static function fatalError($request, Exception $e)
+
+	public static function fatalError($request, Throwable  $e)
 	{
 		self::error($e);
 	}
-	
-	private static function emailError(Exception $e)
-	{
-		if (! $e instanceOf NotFoundHttpException ) {
-			if (!empty(Config::get('statistics.mandrill_secret')) && !empty(Config::get('statistics.error_email'))) {
-				$mandrill = new \Mandrill(config('statistics.mandrill_secret'));
-				$html = 'File: ' . $e->getFile()  . ' Line: ' . $e->getLine() . PHP_EOL . 'TRACE' . PHP_EOL . $e->getMessage() . PHP_EOL . 'TRACE' . PHP_EOL . $e->__toString();
-				$html = nl2br($html);
-				$message = [
-					'html' => $html,
-					'text' => htmlentities($html),
-					'subject' => "Server Error for " . Request::url(),
-					'from_email' => Config::get('statistics.error_email'),
-					'from_name'  => "Server Error",
-					'to' => [
-								[
-									'email' => Config::get('statistics.error_email'),
-									'type' => 'to'
-								]
-							],
-					'track_opens' => true
-				];
-				$async = false;
-	    		$ip_pool = 'Main Pool';
-				$response = $mandrill->messages->send($message, $async, $ip_pool);
-			}
-		}
-	}
-	
-	public function logStatistics($route, $request)
+
+	public function logStatistics($route, $request, $user)
 	{
 		$statistic = new Statistic;
-		
-		$this->logDetails($statistic, $request);
-		
+
+		$excludeUrls = config('statistics.ignored_urls');
+
+		if (is_array($excludeUrls) && count($excludeUrls) > 0 && in_array($request->server('REQUEST_URI'), $excludeUrls)) {
+			return;
+		}
+
+		$this->logDetails($statistic, $request, $user);
+
 		try {
 			$statistic->save();
-			
+
 			if ($request->hasSession()) {
 				$request->session()->put('statistic_id', $statistic->id);
 			}
-			
+
 		}
 		catch( PDOException $Exception ) {
 			Log::error($Exception);
 		}
 	}
 
-	private static function logDetails(&$statistic, $request)
+	private static function logDetails(&$statistic, $request, $user)
 	{
 		$statistic->ip_address = $request->ip();
 		$statistic->destination_url = substr($request->server('REQUEST_URI'), 0, 63);
-		$statistic->referer_url = substr($request->server('HTTP_REFERER'), 0, 190);
- 		
+		$statistic->referer_url = substr($request->server('HTTP_REFERER'), 0, 254);
+
 		$statistic->http_code = http_response_code();
 		$statistic->target_url = substr($request->path(), 0, 63);
 
-		if (!empty($request->route())) {
+		if (! empty($request->route())) {
 			$statistic->destination_name = $request->route()->getName();
 			$statistic->method = $request->route()->methods()[0];
 		}
-		
-		if (auth()->check()) {
+
+		if (! empty($user)) {
 			$userid = config('statistics.user_id');
 			$firstname = config('statistics.first_name');
 			$lastname = config('statistics.last_name');
 
-			if (!empty($userid))
-				$statistic->userid = auth()->user()->$userid;
-			if (!empty($firstname))
-				$statistic->firstname = auth()->user()->$firstname;
-			if (!empty($lastname))
-				$statistic->lastname = auth()->user()->$lastname;
+			if (! empty($userid))
+				$statistic->userid = $user->$userid;
+			if (! empty($firstname))
+				$statistic->firstname = $user->$firstname;
+			if (! empty($lastname))
+				$statistic->lastname = $user->$lastname;
 		}
-		
-		$inputs = Input::all();
-		
+
+		$inputs = $request->all();
+
 		if (count($inputs) > 0) {
 			$restrictedFields = config('statistics.protected_fields');
-			
+
 			foreach ($restrictedFields as $restrictedField) {
 				if (isset($inputs[$restrictedField]))
 					unset($inputs[$restrictedField]);
 			}
 		}
-		
-		$statistic->input = substr(json_encode($inputs), 0, 2048);
+
+		$statistic->input = json_encode($inputs);
 	}
 
 }
