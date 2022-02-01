@@ -24,13 +24,24 @@ php composer update
 
 Step 2:
 
-Publish and run migrations: 
+Publish and run migrations: (You have to add the SP to the config/app.php)
 ```
 php artisan vendor:publish --provider=Ads\Statistics\StatisticsServiceProvider
 php artisan migrate
 ```
 
 Step 3:
+
+Add Statistic logging to 'web' middleware in `app\Http\Kernal.php`:
+```
+    protected $middlewareGroups = [
+        'web' => [
+            ...
+            \Ads\Statistics\Statistic::class,
+        ],
+```
+
+Step 4:
 
 In order to log 500 errors, you'll need to add some code to the app/Exceptions/Handler.php Add this interceptor to the register function
 Add to or create the *report* function before the return:
@@ -49,7 +60,7 @@ public function register()
 
 _* Step 4 is only necessary if you have user authentication_
 
-Step 4:
+Step 5:
 
 Edit the _<b>config/statistics.php</b>_ file.
 
