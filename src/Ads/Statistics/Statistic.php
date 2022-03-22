@@ -89,7 +89,7 @@ class Statistic extends Model {
 	{
 		$statistic->ip_address = $request->ip();
 		$statistic->destination_url = substr($request->server('REQUEST_URI'), 0, 63);
-		$statistic->referer_url = substr($request->server('HTTP_REFERER'), 0, 254);
+		$statistic->referer_url = substr($request->server('HTTP_REFERER'), 0, 200);
 
 		$statistic->http_code = http_response_code();
 		$statistic->target_url = substr($request->path(), 0, 63);
