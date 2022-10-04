@@ -13,13 +13,13 @@ Step 1:
 
 Set up composer, add the package to your require tag:
 ```
-For Laravel 6,7,8+
+For Laravel 6,7,8,9+
 "ads/statistics": "3.0^"
 ```
 
 run
 ```
-php composer update
+composer update
 ```
 
 Step 2:
@@ -32,7 +32,7 @@ php artisan migrate
 
 Step 3:
 
-Add Statistic logging to 'web' middleware in `app\Http\Kernal.php`:
+Add Statistic logging to 'web' middleware in `app\Http\Kernel.php`:
 ```
     protected $middlewareGroups = [
         'web' => [
