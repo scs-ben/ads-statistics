@@ -58,7 +58,7 @@ public function register()
 }
 ```
 
-_* Step 4 is only necessary if you have user authentication_
+_* Step 5 is only necessary if you have user authentication_
 
 Step 5:
 
