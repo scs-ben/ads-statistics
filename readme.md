@@ -24,7 +24,7 @@ composer update
 
 Step 2:
 
-Publish and run migrations: (You have to add the SP to the config/app.php)
+Publish and run migrations:
 ```
 php artisan vendor:publish --provider=Ads\Statistics\StatisticsServiceProvider
 php artisan migrate
