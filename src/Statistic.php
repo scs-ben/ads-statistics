@@ -4,20 +4,17 @@ namespace Ads\Statistics;
 
 
 use Closure;
-use Config;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Http\Request as HttpRequest;
-use Request;
-use Throwable ;
+use Illuminate\Http\Request;
+use Throwable;
 
 class Statistic extends Model {
 
 	// Don't forget to fill this array
 	protected $fillable = [];
 
-	public function handle(HttpRequest $request, Closure $next)
+	public function handle(Request $request, Closure $next)
     {
     	if (empty($request)) {
 			$request = request();

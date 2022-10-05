@@ -2,7 +2,6 @@
 
 namespace Ads\Statistics;
 
-use Statistic;
 use Illuminate\Support\ServiceProvider;
 
 class StatisticsServiceProvider extends ServiceProvider {
@@ -18,12 +17,12 @@ class StatisticsServiceProvider extends ServiceProvider {
 	{
 		// Publish the config file
 		$this->publishes([
-				__DIR__.'/../config/statistics.php' => config_path('statistics.php'),
+				__DIR__.'/config/statistics.php' => config_path('statistics.php'),
 		]);
 		
 		// Publish your migrations
 		$this->publishes([
-				__DIR__.'/../database/migrations/' => base_path('/database/migrations')
+				__DIR__.'/database/migrations/' => base_path('/database/migrations')
 		], 'migrations');
 	}
 	
@@ -35,7 +34,7 @@ class StatisticsServiceProvider extends ServiceProvider {
 	public function register()
 	{
 		$this->mergeConfigFrom(
-		    __DIR__.'/../config/statistics.php', 'statistics'
+		    __DIR__.'/config/statistics.php', 'statistics'
 		);
 	}
 
