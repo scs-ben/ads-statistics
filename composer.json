@@ -5,8 +5,8 @@
 	"license": "GPL-3.0-or-later",
     "authors": [
         {
-            "name": "Agility Data Systems",
-            "email": "info@agilitydatasystems.com"
+            "name": "SCS Grand Rapids",
+            "email": "development@scsgrandrapids.com"
         }
     ],
     "require": {
@@ -18,5 +18,15 @@
             "Ads\\Statistics": "src/"
         }
     },
-    "minimum-stability": "stable"
+    "minimum-stability": "stable",
+	"extra": {
+        "laravel": {
+            "providers": [
+                "Ads\\Statistics\\StatisticsServiceProvider "
+            ],
+            "aliases": {
+                "Statistic": "Ads\\Statistics\\Statistic"
+            }
+        }
+    }
 }
