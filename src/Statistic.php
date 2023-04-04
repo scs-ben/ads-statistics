@@ -85,11 +85,11 @@ class Statistic extends Model {
 	private static function logDetails(&$statistic, $request, $user)
 	{
 		$statistic->ip_address = $request->ip();
-		$statistic->destination_url = substr($request->server('REQUEST_URI'), 0, 63);
-		$statistic->referer_url = substr($request->server('HTTP_REFERER'), 0, 200);
+		$statistic->destination_url = !empty($request->server('REQUEST_URI')) ? substr($request->server('REQUEST_URI'), 0, 63) : '';
+		$statistic->referer_url = !empty($request->server('HTTP_REFERER')) ? substr($request->server('HTTP_REFERER'), 0, 200) : '';
 
 		$statistic->http_code = http_response_code();
-		$statistic->target_url = substr($request->path(), 0, 63);
+		$statistic->target_url = !empty($request->path()) ? substr($request->path(), 0, 63) : '';
 
 		if (! empty($request->route())) {
 			$statistic->destination_name = $request->route()->getName();
