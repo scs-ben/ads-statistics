@@ -13,20 +13,14 @@ Step 1:
 
 Set up composer, add the package to your require tag:
 ```
-For Laravel 6,7,8,9+
-"ads/statistics": "3.0^"
-```
-
-run
-```
-composer update
+composer require ads/statistics
 ```
 
 Step 2:
 
 Publish and run migrations:
 ```
-php artisan vendor:publish --provider=Ads\Statistics\StatisticsServiceProvider
+php artisan vendor:publish --provider=Ads\\Statistics\\StatisticsServiceProvider
 php artisan migrate
 ```
 
@@ -70,6 +64,6 @@ For example:
 ```
   'user_id' => 'email',
   'first_name' => 'first_name',
-	'last_name' => 'last_name',
-	'protected_fields' => ['password'],
+  'last_name' => 'last_name',
+  'protected_fields' => ['password'],
 ```
