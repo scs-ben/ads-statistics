@@ -61,6 +61,16 @@ class Statistic extends Model {
 	{
 		$statistic = new Statistic;
 
+		$routeName = $request->route()->getName();
+
+		if (!empty($routeName)) {
+			$excludedRouteNames = config('statistics.ignored_route_names');
+
+			if (is_array($excludedRouteNames) && count($excludedRouteNames) > 0 && in_array($routeName, $excludedRouteNames)) {
+				return;
+			}
+		}
+
 		$excludeUrls = config('statistics.ignored_urls');
 
 		if (is_array($excludeUrls) && count($excludeUrls) > 0 && in_array($request->server('REQUEST_URI'), $excludeUrls)) {
