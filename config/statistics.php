@@ -13,9 +13,10 @@ return array(
 	*/
 
 	'user_id' => null,
-    'first_name' => null,
-    'last_name' => null,
+        'first_name' => null,
+        'last_name' => null,
 	'protected_fields' => ['_token','password'],
-	'ignored_urls' => []
+	'ignored_urls' => [],
+	'ignored_route_names' => ['users.show'],
     
 );
