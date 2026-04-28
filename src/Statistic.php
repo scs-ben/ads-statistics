@@ -16,19 +16,24 @@ class Statistic extends Model {
 
 	public function handle(Request $request, Closure $next)
     {
-    	if (empty($request)) {
-			$request = request();
-		}
+    	$response = $next($request);
 
-		$user = null;
-
-		if (Auth::check()) {
-			$user = Auth::user();
-		}
-
-		$this->logStatistics($request->route(), $request, $user);
-
-		return $next($request);
+	    try {
+	        if (empty($request)) {
+	            $request = request();
+	        }
+	
+	        $user = Auth::check() ? Auth::user() : null;
+	
+	        // 2. Wrap the logging logic in its own try-catch
+	        $this->logStatistics($request->route(), $request, $user);
+	    } catch (\Throwable $e) {
+	        // Log the error to the standard Laravel log so you know it failed,
+	        // but don't throw it.
+	        \Log::error("Statistics logging failed: " . $e->getMessage());
+	    }
+	
+	    return $response;
     }
 
 	public static function error(Throwable $e, $user = null)
@@ -121,23 +126,19 @@ class Statistic extends Model {
 
 		$inputs = $request->all();
 
-		if (count($inputs) > 0) {
-			$restrictedFields = config('statistics.protected_fields');
-
-			foreach ($restrictedFields as $restrictedField) {
-				if (isset($inputs[$restrictedField]))
-					unset($inputs[$restrictedField]);
-			}
-		}
-
-		$jsonInput = json_encode($inputs);
-
-		// If using standard TEXT (64KB), truncate at 60,000 to be safe
-		if (strlen($jsonInput) > 60000) {
-			$statistic->input = substr($jsonInput, 0, 60000) . '... [TRUNCATED]';
-		} else {
-			$statistic->input = $jsonInput;
-		}
+	    // Filter restricted fields
+	    $restrictedFields = config('statistics.protected_fields', []);
+	    $filteredInputs = array_diff_key($inputs, array_flip($restrictedFields));
+	
+	    $encoded = json_encode($filteredInputs);
+	
+	    // Safety check for JSON errors or extreme length
+	    if ($encoded === false) {
+	        $statistic->input = json_encode(['error' => 'Encoding failed', 'message' => json_last_error_msg()]);
+	    } else {
+	        // Use mb_strcut to safely truncate multi-byte strings if needed
+	        $statistic->input = mb_strcut($encoded, 0, 65000); 
+	    }
 	}
 
 }
