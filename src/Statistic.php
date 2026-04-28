@@ -130,7 +130,14 @@ class Statistic extends Model {
 			}
 		}
 
-		$statistic->input = json_encode($inputs);
+		$jsonInput = json_encode($inputs);
+
+		// If using standard TEXT (64KB), truncate at 60,000 to be safe
+		if (strlen($jsonInput) > 60000) {
+			$statistic->input = substr($jsonInput, 0, 60000) . '... [TRUNCATED]';
+		} else {
+			$statistic->input = $jsonInput;
+		}
 	}
 
 }
