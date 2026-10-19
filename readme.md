@@ -1,69 +1,101 @@
 ads-statistics
 ==============
 
-<h3>Audit/Error Logging Module for Laravel</h3>
+### Audit/Error Logging Module for Laravel
 
-The module will track the page view history for all users of the associated website. The module will log 500 error statistics to help with debugging code. Additionaly, the posted data for form submission will be saved in the database. The settings file has an array option that allows you to remove sensitive files from being saved in the tracking table.
+Records page views (URL, route, status code, user, filtered form input) and exceptions to a `statistics` table to help with usage reporting and debugging 500 errors.
 
-Once configired, this plugin will automatically save page viewing history to the database.
+Logging is designed to never break your app: every value is cleaned to valid UTF-8 and truncated to fit its column, and any failure while logging is written to the Laravel log and swallowed. Page views are written after the response has been sent (or queued), so they don't slow requests down.
 
-_(Make sure to run "php artisan migrate" if updating)_
+Supports Laravel 7–13 on PHP 7.3+.
 
-Step 1:
+## Installation
 
-Set up composer, add the package to your require tag:
 ```
 composer require ads/statistics
-```
-
-Step 2:
-
-Publish and run migrations:
-```
-php artisan vendor:publish --provider=Ads\\Statistics\\StatisticsServiceProvider
+php artisan vendor:publish --provider="Ads\Statistics\StatisticsServiceProvider"
 php artisan migrate
 ```
 
-Step 3:
+_Upgrading?_ Publish and run migrations again; `update_statistics_table` widens `ip_address` for IPv6 and adds indexes. On Laravel 7–9 it requires `composer require doctrine/dbal`.
 
-Add Statistic logging to 'web' middleware in `app\Http\Kernel.php`:
-```
-    protected $middlewareGroups = [
-        'web' => [
-            ...
-            \Ads\Statistics\Statistic::class,
-        ],
+## Log page views
+
+Add the middleware to the `web` group.
+
+Laravel 11+ (`bootstrap/app.php`):
+```php
+->withMiddleware(function (Middleware $middleware) {
+    $middleware->web(append: [
+        \Ads\Statistics\Http\Middleware\LogStatistics::class,
+    ]);
+})
 ```
 
-Step 4:
-
-In order to log 500 errors, you'll need to add some code to the app/Exceptions/Handler.php Add this interceptor to the register function
-Add to or create the *report* function before the return:
+Laravel 7–10 (`app/Http/Kernel.php`):
+```php
+protected $middlewareGroups = [
+    'web' => [
+        // ...
+        \Ads\Statistics\Http\Middleware\LogStatistics::class,
+    ],
+];
 ```
+
+Registering `\Ads\Statistics\Statistic::class` as middleware still works but is deprecated; it writes synchronously before the response is sent.
+
+## Log exceptions
+
+Laravel 11+ (`bootstrap/app.php`):
+```php
+->withExceptions(function (Exceptions $exceptions) {
+    $exceptions->report(function (Throwable $e) {
+        \Ads\Statistics\Statistic::error($e);
+    });
+})
+```
+
+Laravel 8–10 (`app/Exceptions/Handler.php`):
+```php
 public function register()
 {
-	$this->reportable(function (Throwable $e) {
-	    //
-	});
-
-	$this->reportable(function (\Exception $e) {
-	    \Statistic::error($e);
-	});
+    $this->reportable(function (Throwable $e) {
+        \Ads\Statistics\Statistic::error($e);
+    });
 }
 ```
 
-_* Step 5 is only necessary if you have user authentication_
+`Statistic::error()` never throws. Exceptions with their own status (e.g. `HttpException`) record that code; others record `error_status_code` (500).
 
-Step 5:
+## Configuration
 
-Edit the _<b>config/statistics.php</b>_ file.
+Edit `config/statistics.php`. The main options:
 
-Please enter the column names from your user database table.
+| Key | Default | Purpose |
+| --- | --- | --- |
+| `enabled` / `log_errors` / `log_input` | `true` | Toggle page views, exceptions, and input capture |
+| `user_id`, `first_name`, `last_name` | `null` | Attribute names on your User model, e.g. `'email'` |
+| `protected_fields` | passwords, tokens, card numbers… | Keys redacted at any depth, case-insensitive |
+| `ignored_urls` | `[]` | URIs to skip; supports wildcards like `'api/*'` |
+| `ignored_route_names` | `['users.show']` | Route names to skip |
+| `queue` | `false` | `true` or a queue name to write via a queued job |
+| `connection` | `null` | Separate database connection for the table |
+| `retention_days` | `180` | Used by `statistics:prune` |
 
-For example:
+Most can be set via `.env` (`STATISTICS_ENABLED`, `STATISTICS_QUEUE`, `STATISTICS_RETENTION_DAYS`, …).
+
+## Pruning old rows
+
 ```
-  'user_id' => 'email',
-  'first_name' => 'first_name',
-  'last_name' => 'last_name',
-  'protected_fields' => ['password'],
+php artisan statistics:prune            # uses retention_days
+php artisan statistics:prune --days=30
+```
+
+Schedule it daily, e.g. `Schedule::command('statistics:prune')->daily();`.
+
+## Tests
+
+```
+composer install
+composer test
 ```

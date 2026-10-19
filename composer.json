@@ -2,7 +2,7 @@
     "name": "ads/statistics",
     "description": "Tracks basic user information to generate statistical data on page usage. Also provides additional information to debug 500 errors",
     "keywords": ["laravel", "administrative site usage statistics", "additional error debugging"],
-	"license": "GPL-3.0-or-later",
+    "license": "GPL-3.0-or-later",
     "authors": [
         {
             "name": "SCS Grand Rapids",
@@ -10,16 +10,31 @@
         }
     ],
     "require": {
-        "php": "^7.3|^8.0|^8.1|^8.2|^8.3|^8.4|^8.5",
+        "php": "^7.3|^8.0",
+        "ext-json": "*",
+        "ext-mbstring": "*",
         "illuminate/support": "^7.0|^8.0|^9.0|^10.0|^11.0|^12.0|^13.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^5.0|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0",
+        "phpunit/phpunit": "^9.5|^10.0|^11.0|^12.0"
     },
     "autoload": {
         "psr-4": {
             "Ads\\Statistics\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Ads\\Statistics\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
     "minimum-stability": "stable",
-	"extra": {
+    "prefer-stable": true,
+    "extra": {
         "laravel": {
             "providers": [
                 "Ads\\Statistics\\StatisticsServiceProvider"
