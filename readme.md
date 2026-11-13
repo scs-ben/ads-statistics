@@ -84,6 +84,43 @@ Edit `config/statistics.php`. The main options:
 
 Most can be set via `.env` (`STATISTICS_ENABLED`, `STATISTICS_QUEUE`, `STATISTICS_RETENTION_DAYS`, …).
 
+## Dashboard
+
+An admin view of the statistics table, at `/statistics` by default:
+
+- **Overview:** page views, signed-in users, unique IPs, exception count and rate, 4xx/5xx totals, a traffic chart, top exceptions (grouped by file and line), status codes, top pages and most active users
+- **Requests:** a paginated log you can filter by type (page views or exceptions), status (`404` or `5xx`), user, or URL/route/file text
+- **Detail:** one request or exception with its input (pretty-printed) and full stack trace, plus how many times that exception has happened
+
+Pick the period at the top (hour, 24 hours, 7 days, 30 days) and tick **Auto-refresh** to reload every 30 seconds. Views of the dashboard itself are never logged.
+
+### Who can see it
+
+The local environment can always open it. Elsewhere, list users by email or role in `.env`:
+
+```
+STATISTICS_DASHBOARD_EMAILS=ben@example.com,ops@example.com
+STATISTICS_DASHBOARD_ROLES=admin,developer
+```
+
+Emails are matched case-insensitively against the user's `email` attribute. Roles use `$user->hasAnyRole()` / `hasRole()` when available (e.g. spatie/laravel-permission), otherwise the user's `role` attribute, which can be a string or an array. Change the attribute names with `dashboard.email_attribute` and `dashboard.role_attribute`.
+
+For anything else, define the gate yourself (in `AppServiceProvider::boot()`). It replaces the default rules:
+
+```php
+Gate::define('viewStatistics', fn ($user) => $user->is_admin);
+```
+
+### Other settings
+
+| `.env` | Default | Purpose |
+| --- | --- | --- |
+| `STATISTICS_DASHBOARD_ENABLED` | `true` | Set `false` to remove the routes entirely |
+| `STATISTICS_DASHBOARD_PATH` | `statistics` | URL path |
+| `STATISTICS_DASHBOARD_DOMAIN` | none | Serve it on a specific domain only |
+
+Change `dashboard.middleware` in the config (default `['web']`) to add e.g. `auth`. To customise the pages, run `php artisan vendor:publish --tag=statistics-views`.
+
 ## Pruning old rows
 
 ```

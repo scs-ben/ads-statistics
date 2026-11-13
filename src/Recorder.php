@@ -16,6 +16,11 @@ class Recorder
 		$route = $request->route();
 		$routeName = is_object($route) ? $route->getName() : null;
 
+		// Never log views of the dashboard itself
+		if (is_string($routeName) && strpos($routeName, 'statistics.') === 0) {
+			return true;
+		}
+
 		if (! empty($routeName) && in_array($routeName, (array) config('statistics.ignored_route_names', []), true)) {
 			return true;
 		}
