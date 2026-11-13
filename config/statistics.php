@@ -78,8 +78,10 @@ return [
 	| Dashboard
 	|--------------------------------------------------------------------------
 	| Admin view of the statistics table, served at /{path}.
-	| Access is controlled by the `viewStatistics` gate. The default gate allows:
-	|   - everyone in the local environment
+	| Access is controlled by the `viewStatistics` gate. Guests are always denied.
+	| The default gate allows:
+	|   - any signed-in user in the local environment (turn off with
+	|     STATISTICS_DASHBOARD_ALLOW_LOCAL=false)
 	|   - signed-in users whose email is listed in `emails`
 	|   - signed-in users with any role listed in `roles`
 	|     (uses $user->hasRole() if available, e.g. spatie/laravel-permission,
@@ -100,6 +102,7 @@ return [
 		'path' => env('STATISTICS_DASHBOARD_PATH', 'statistics'),
 		'domain' => env('STATISTICS_DASHBOARD_DOMAIN'),
 		'middleware' => ['web'],
+		'allow_local' => env('STATISTICS_DASHBOARD_ALLOW_LOCAL', true),
 		'emails' => array_filter(array_map('trim', explode(',', (string) env('STATISTICS_DASHBOARD_EMAILS', '')))),
 		'roles' => array_filter(array_map('trim', explode(',', (string) env('STATISTICS_DASHBOARD_ROLES', '')))),
 		'email_attribute' => 'email',

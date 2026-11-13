@@ -96,7 +96,7 @@ Pick the period at the top (hour, 24 hours, 7 days, 30 days) and tick **Auto-ref
 
 ### Who can see it
 
-The local environment can always open it. Elsewhere, list users by email or role in `.env`:
+Guests are always denied. In the local environment any signed-in user can open it (set `STATISTICS_DASHBOARD_ALLOW_LOCAL=false` to turn that off). Elsewhere, list users by email or role in `.env`:
 
 ```
 STATISTICS_DASHBOARD_EMAILS=ben@example.com,ops@example.com

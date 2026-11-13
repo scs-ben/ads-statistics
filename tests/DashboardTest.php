@@ -120,11 +120,30 @@ class DashboardTest extends TestCase
 		$this->admin()->get('/statistics')->assertForbidden();
 	}
 
-	public function test_local_environment_allows_everyone()
+	public function test_local_environment_still_denies_guests()
 	{
 		$this->app['env'] = 'local';
 
-		$this->get('/statistics')->assertOk();
+		$this->get('/statistics')->assertForbidden();
+	}
+
+	public function test_local_environment_allows_any_signed_in_user()
+	{
+		$this->app['env'] = 'local';
+
+		$this->actingAs(new GenericUser(['id' => 2, 'email' => 'someone@example.com']))
+			->get('/statistics')
+			->assertOk();
+	}
+
+	public function test_local_rule_can_be_disabled()
+	{
+		$this->app['env'] = 'local';
+		config(['statistics.dashboard.allow_local' => false]);
+
+		$this->actingAs(new GenericUser(['id' => 2, 'email' => 'someone@example.com']))
+			->get('/statistics')
+			->assertForbidden();
 	}
 
 	public function test_app_defined_gate_replaces_default()

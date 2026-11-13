@@ -3,18 +3,19 @@
 namespace Ads\Statistics\Dashboard;
 
 /**
- * The default `viewStatistics` gate: local environment, allowed emails, or allowed roles.
+ * The default `viewStatistics` gate. Guests are always denied; signed-in users need an
+ * allowed email or role, or any signed-in user in the local environment.
  */
 class Access
 {
 	public static function allows($user = null)
 	{
-		if (app()->environment('local')) {
-			return true;
-		}
-
 		if (! $user) {
 			return false;
+		}
+
+		if (config('statistics.dashboard.allow_local', true) && app()->environment('local')) {
+			return true;
 		}
 
 		return self::emailAllowed($user) || self::roleAllowed($user);
